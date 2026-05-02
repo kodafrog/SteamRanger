@@ -60,6 +60,15 @@
     </button>
 
     <p v-if="error" class="error">{{ error }}</p>
+
+    <!-- UPDATE BANNER — bottom right, only when update is available -->
+    <div v-if="updateAvailable" class="update-banner">
+      <span>⬆ SteamRanger {{ updateVersion }} is available</span>
+      <button class="update-btn" @click="installUpdate" :disabled="updateInstalling">
+        {{ updateInstalling ? "Installing..." : "Update now" }}
+      </button>
+    </div>
+
   </div>
 </template>
 
@@ -67,6 +76,8 @@
 import { ref, onMounted, reactive } from "vue";
 import { steamApi } from "../lib/steamApi";
 import { loadSavedApiKey, saveApiKey } from "./userinfo_filewriter/userinfo";
+import { check } from "@tauri-apps/plugin-updater";
+import { relaunch } from "@tauri-apps/plugin-process";
 
 const copyPopup = reactive({ visible: false, x: 0, y: 0 });
 let popupTimer: ReturnType<typeof setTimeout> | null = null;
@@ -92,8 +103,42 @@ const keyIsSaved = ref(false);
 const loading = ref(false);
 const error = ref<string | null>(null);
 
+// ─── Updater ──────────────────────────────────────────────────────────────────
+
+const updateAvailable = ref(false);
+const updateVersion = ref<string | null>(null);
+const updateInstalling = ref(false);
+let pendingUpdate: Awaited<ReturnType<typeof check>> | null = null;
+
+async function checkForUpdates() {
+  try {
+    const update = await check();
+    if (update?.available) {
+      pendingUpdate = update;
+      updateVersion.value = update.version;
+      updateAvailable.value = true;
+    }
+  } catch (e) {
+    // Silently ignore — no internet or no release yet
+    console.warn("Update check failed:", e);
+  }
+}
+
+async function installUpdate() {
+  if (!pendingUpdate) return;
+  updateInstalling.value = true;
+  try {
+    await pendingUpdate.downloadAndInstall();
+    await relaunch();
+  } catch (e) {
+    console.warn("Update failed:", e);
+    updateInstalling.value = false;
+  }
+}
+
 /**
  * On mount: check for a saved key and auto-populate if found.
+ * Also kick off the update check.
  */
 onMounted(async () => {
   const saved = await loadSavedApiKey();
@@ -101,6 +146,8 @@ onMounted(async () => {
     apiKey.value = saved;
     keyIsSaved.value = true;
   }
+
+  await checkForUpdates();
 });
 
 function extractAppId(url: string): string | null {
@@ -156,6 +203,7 @@ async function handleSubmit() {
   flex-direction: column;
   gap: 12px;
   max-width: 500px;
+  position: relative;
 }
 
 .input {
@@ -309,5 +357,42 @@ async function handleSubmit() {
 .error {
   color: #dc2626;
   font-size: 13px;
+}
+
+/* UPDATE BANNER */
+.update-banner {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  background: #111827;
+  color: #f9fafb;
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+  z-index: 100;
+}
+
+.update-btn {
+  padding: 5px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #2563eb;
+  color: white;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.update-btn:hover {
+  background: #1d4ed8;
+}
+
+.update-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 </style>

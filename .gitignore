@@ -23,6 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
-# User data — never commit
+# User data
 SteamRanger/output_for_users/
 SteamRanger/userinfo/api_key.txt
+~/.tauri/steamranger.key
+~/.tauri/steamranger.key.pub
