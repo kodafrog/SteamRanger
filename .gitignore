@@ -30,3 +30,4 @@ SteamRanger/userinfo/*
 ~/.tauri/steamranger.key
 ~/.tauri/steamranger.key.pub
 
+userinfo/api_key.txt
