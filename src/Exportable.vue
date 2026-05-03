@@ -439,6 +439,7 @@ async function runExport(_gameFolder: string): Promise<void> {
       type: "success",
       message: `Exported to /SteamRanger/output_for_users/${toFolderName(gameName.value)}`
     };
+    await open(_gameFolder);
   } catch (e: any) {
     exportStatus.value = {
       type: "error",
