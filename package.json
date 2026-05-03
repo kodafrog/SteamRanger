@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && cp -r src/assets/letters dist/assets/letters",
     "preview": "vite preview",
     "tauri": "tauri"
+    
+    
   },
   "dependencies": {
     "@tauri-apps/api": "^2",
