@@ -259,7 +259,7 @@ const footerBbcode = computed(() => {
   if (contributors.value.length > 0) {
     contributors.value.forEach(() => {
       lines.push(NL);
-      lines.push("[previewimg=SCREENSHOT_ID;sizeOriginal,floatLeft;STEAM_PROFILE_IMG_URL][/previewimg][b]USERNAME[/b]");
+      lines.push("__IMG__[b]USERNAME[/b]");
       lines.push("[i]Achievement Name[/i]");
       lines.push(NL);
       lines.push(DIVIDER);
@@ -284,7 +284,7 @@ function buildConnectedList(group: AchievementGroup, withNotes: boolean): string
   const entries = group.achievements.map((a) => {
     const lines = [
       nl,
-      `[IMG][b]${a.name}[/b]`,
+      `__IMG__[b]${a.name}[/b]`,
       `[i]${a.description}[/i]`,
     ];
     if (withNotes) lines.push("WRITE_ACHIEVEMENT_NOTES_HERE");
@@ -302,7 +302,7 @@ function buildSeparatedList(group: AchievementGroup, withNotes: boolean): string
   const entries = group.achievements.map((a) => {
     const lines = [
       nl,
-      `[IMG][b]${a.name}[/b]`,
+      `__IMG__[b]${a.name}[/b]`,
       `[i]${a.description}[/i]`,
     ];
     if (withNotes) lines.push("WRITE_ACHIEVEMENT_NOTES_HERE");
