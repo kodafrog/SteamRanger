@@ -190,7 +190,7 @@ async function handleSubmit() {
     const name = extractGameName(steamLink.value, appid);
     emit("success", result, name);
   } catch (e: any) {
-    error.value = e?.message ?? "Failed to fetch achievements";
+    error.value = e?.message ?? JSON.stringify(e) ?? "Failed to fetch achievements";
   } finally {
     loading.value = false;
   }
