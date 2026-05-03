@@ -48,6 +48,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import { getCurrentWindow } from "@tauri-apps/api/window";
 import { getVersion } from "@tauri-apps/api/app";
 import SearchBar from "./lib/searchBar.vue";
 import Unsorted from "./lib/Unsorted.vue";
@@ -70,6 +71,8 @@ const currentGameTitle = ref<string | null>(null);
 
 onMounted(async () => {
   const version = await getVersion();
+  const appWindow = getCurrentWindow();
+  await appWindow.setTitle(`SteamRanger v${version}`);
   document.title = `SteamRanger v${version}`;
 });
 
