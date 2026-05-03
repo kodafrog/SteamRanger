@@ -25,18 +25,6 @@ jobs:
       - name: Install frontend deps
         run: npm install
 
-      - name: Debug signing key
-        shell: pwsh
-        env:
-          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
-        run: |
-          $key = $env:TAURI_SIGNING_PRIVATE_KEY
-          Write-Output "Key is null or empty: $([string]::IsNullOrEmpty($key))"
-          Write-Output "Key length: $($key.Length)"
-          if ($key.Length -gt 0) {
-            Write-Output "First 20 chars: $($key.Substring(0, [Math]::Min(20, $key.Length)))"
-          }
-
       - name: Build and release
         uses: tauri-apps/tauri-action@v0.5.20
         env:
