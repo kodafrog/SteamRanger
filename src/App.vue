@@ -47,8 +47,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
-
+import { ref, onMounted } from "vue";
+import { getVersion } from "@tauri-apps/api/app";
 import SearchBar from "./lib/searchBar.vue";
 import Unsorted from "./lib/Unsorted.vue";
 import GroupsManager from "./lib/GroupsManager.vue";
@@ -67,6 +67,11 @@ import { normalizeSteamAchievements } from "./lib/achievementNormalizer";
 
 
 const currentGameTitle = ref<string | null>(null);
+
+onMounted(async () => {
+  const version = await getVersion();
+  document.title = `SteamRanger v${version}`;
+});
 
 function handleFetch(data: any, name: string) {
   const normalized = normalizeSteamAchievements(data);
